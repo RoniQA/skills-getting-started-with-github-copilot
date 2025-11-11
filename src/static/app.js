@@ -24,12 +24,25 @@ document.addEventListener("DOMContentLoaded", () => {
         let participantsHTML = '';
         if (details.participants.length > 0) {
           const participantItems = details.participants
-            .map(email => `
-              <li>
-                <span>${email}</span>
-                <button class="delete-participant-btn" data-activity="${name}" data-email="${email}" title="Remove participant">🗑️</button>
-              </li>
-            `)
+            .map(email => {
+              // Simple sanitization to escape special characters
+              function escape(str) {
+                return String(str)
+                  .replace(/&/g, "&amp;")
+                  .replace(/</g, "&lt;")
+                  .replace(/>/g, "&gt;")
+                  .replace(/"/g, "&quot;")
+                  .replace(/'/g, "&#39;");
+              }
+              const safeEmail = escape(email);
+              const safeName = escape(name);
+              return `
+                <li>
+                  <span>${safeEmail}</span>
+                  <button class="delete-participant-btn" data-activity="${safeName}" data-email="${safeEmail}" title="Remove participant">🗑️</button>
+                </li>
+              `;
+            })
             .join('');
           participantsHTML = `
             <div class="participants-section">
@@ -48,10 +61,23 @@ document.addEventListener("DOMContentLoaded", () => {
           `;
         }
 
+        // Escape activity name and description before inserting into HTML
+        function escape(str) {
+          return String(str)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+        }
+        const safeName = escape(name);
+        const safeDescription = escape(details.description);
+        const safeSchedule = escape(details.schedule);
+
         activityCard.innerHTML = `
-          <h4>${name}</h4>
-          <p>${details.description}</p>
-          <p><strong>Schedule:</strong> ${details.schedule}</p>
+          <h4>${safeName}</h4>
+          <p>${safeDescription}</p>
+          <p><strong>Schedule:</strong> ${safeSchedule}</p>
           <p><strong>Availability:</strong> ${spotsLeft} spots left</p>
           ${participantsHTML}
         `;
