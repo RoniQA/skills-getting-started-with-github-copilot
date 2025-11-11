@@ -24,7 +24,18 @@ class TestGetActivities:
         
         data = response.json()
         assert isinstance(data, dict)
-        assert len(data) == 9  # Should have 9 activities
+        expected_activities = [
+            "Chess Club",
+            "Programming Class",
+            "Gym Class",
+            "Soccer Team",
+            "Basketball Club",
+            "Art Club",
+            "Drama Club",
+            "Science Olympiad",
+            "Debate Team"
+        ]
+        assert len(data) == len(expected_activities)  # Should have all expected activities
         
         # Verify structure of one activity
         assert "Chess Club" in data

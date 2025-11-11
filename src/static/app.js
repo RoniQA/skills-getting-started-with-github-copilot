@@ -152,8 +152,21 @@ document.addEventListener("DOMContentLoaded", () => {
     if (event.target.classList.contains("delete-participant-btn")) {
       const activity = event.target.dataset.activity;
       const email = event.target.dataset.email;
-      
-      if (confirm(`Are you sure you want to unregister ${email} from ${activity}?`)) {
+
+      // Simple sanitization to escape special characters
+      function escape(str) {
+        return String(str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      const safeActivity = escape(activity);
+      const safeEmail = escape(email);
+
+      if (confirm(`Are you sure you want to unregister ${safeEmail} from ${safeActivity}?`)) {
         deleteParticipant(activity, email);
       }
     }
