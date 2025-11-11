@@ -24,7 +24,12 @@ document.addEventListener("DOMContentLoaded", () => {
         let participantsHTML = '';
         if (details.participants.length > 0) {
           const participantItems = details.participants
-            .map(email => `<li>${email}</li>`)
+            .map(email => `
+              <li>
+                <span>${email}</span>
+                <button class="delete-participant-btn" data-activity="${name}" data-email="${email}" title="Remove participant">🗑️</button>
+              </li>
+            `)
             .join('');
           participantsHTML = `
             <div class="participants-section">
@@ -102,6 +107,55 @@ document.addEventListener("DOMContentLoaded", () => {
       messageDiv.className = "error";
       messageDiv.classList.remove("hidden");
       console.error("Error signing up:", error);
+    }
+  });
+
+  // Handle delete participant
+  async function deleteParticipant(activity, email) {
+    try {
+      const response = await fetch(
+        `/activities/${encodeURIComponent(activity)}/unregister?email=${encodeURIComponent(email)}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      const result = await response.json();
+
+      if (response.ok) {
+        // Refresh activities list
+        await fetchActivities();
+        
+        // Show success message
+        messageDiv.textContent = result.message;
+        messageDiv.className = "success";
+        messageDiv.classList.remove("hidden");
+        
+        setTimeout(() => {
+          messageDiv.classList.add("hidden");
+        }, 5000);
+      } else {
+        messageDiv.textContent = result.detail || "Failed to unregister participant";
+        messageDiv.className = "error";
+        messageDiv.classList.remove("hidden");
+      }
+    } catch (error) {
+      messageDiv.textContent = "Failed to unregister participant. Please try again.";
+      messageDiv.className = "error";
+      messageDiv.classList.remove("hidden");
+      console.error("Error unregistering participant:", error);
+    }
+  }
+
+  // Event delegation for delete buttons
+  activitiesList.addEventListener("click", (event) => {
+    if (event.target.classList.contains("delete-participant-btn")) {
+      const activity = event.target.dataset.activity;
+      const email = event.target.dataset.email;
+      
+      if (confirm(`Are you sure you want to unregister ${email} from ${activity}?`)) {
+        deleteParticipant(activity, email);
+      }
     }
   });
 
