@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
               return `
                 <li>
                   <span>${safeEmail}</span>
-                  <button class="delete-participant-btn" data-activity="${safeName}" data-email="${safeEmail}" title="Remove participant">🗑️</button>
+                  <button class="delete-participant-btn" data-activity="${name}" data-email="${email}" title="Remove participant">🗑️</button>
                 </li>
               `;
             })
