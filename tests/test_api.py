@@ -116,6 +116,32 @@ class TestSignupForActivity:
             "/activities/Programming%20Class/signup?email=test@mergington.edu"
         )
         assert response.status_code == status.HTTP_200_OK
+    
+    def test_signup_activity_full(self, client):
+        """Test that signup fails when activity is full"""
+        # Get Chess Club which has max_participants of 12
+        activities_response = client.get("/activities")
+        activities = activities_response.json()
+        chess_club = activities["Chess Club"]
+        max_participants = chess_club["max_participants"]
+        
+        # Fill up the activity to max capacity
+        current_count = len(chess_club["participants"])
+        for i in range(current_count, max_participants):
+            response = client.post(
+                f"/activities/Chess Club/signup?email=student{i}@mergington.edu"
+            )
+            assert response.status_code == status.HTTP_200_OK
+        
+        # Try to sign up one more student (should fail)
+        response = client.post(
+            "/activities/Chess Club/signup?email=overflow@mergington.edu"
+        )
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        
+        data = response.json()
+        assert "detail" in data
+        assert "full" in data["detail"].lower()
 
 
 class TestUnregisterFromActivity:
