@@ -4,6 +4,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const signupForm = document.getElementById("signup-form");
   const messageDiv = document.getElementById("message");
 
+  // Simple sanitization to escape special characters
+  function escape(str) {
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
   // Function to fetch activities from API
   async function fetchActivities() {
     try {
@@ -25,15 +35,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (details.participants.length > 0) {
           const participantItems = details.participants
             .map(email => {
-              // Simple sanitization to escape special characters
-              function escape(str) {
-                return String(str)
-                  .replace(/&/g, "&amp;")
-                  .replace(/</g, "&lt;")
-                  .replace(/>/g, "&gt;")
-                  .replace(/"/g, "&quot;")
-                  .replace(/'/g, "&#39;");
-              }
               const safeEmail = escape(email);
               const safeName = escape(name);
               return `
@@ -62,14 +63,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // Escape activity name and description before inserting into HTML
-        function escape(str) {
-          return String(str)
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#39;");
-        }
         const safeName = escape(name);
         const safeDescription = escape(details.description);
         const safeSchedule = escape(details.schedule);
@@ -178,16 +171,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (event.target.classList.contains("delete-participant-btn")) {
       const activity = event.target.dataset.activity;
       const email = event.target.dataset.email;
-
-      // Simple sanitization to escape special characters
-      function escape(str) {
-        return String(str)
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
-          .replace(/"/g, "&quot;")
-          .replace(/'/g, "&#39;");
-      }
 
       const safeActivity = escape(activity);
       const safeEmail = escape(email);
