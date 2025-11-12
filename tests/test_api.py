@@ -1,6 +1,5 @@
 """Test cases for the Mergington High School API"""
 
-import pytest
 from fastapi import status
 
 
